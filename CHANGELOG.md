@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.1.6] - 2026-10-17
+
+### Added
+
+- Verify GitHub package installation on Linux and Windows in fresh Python
+  environments, including version, VCS provenance, dependencies, and PDF/PNG export.
+- Verify remote Skills CLI discovery and installation, an actual update from
+  a simulated older snapshot, an unchanged repeated update, and complete removal.
+  Remote installations are pinned to the tested commit.
+- Include portable commands for running the remote installation checks in
+  `CONTRIBUTING.md` and ship the check scripts in source distributions.
+
+### Fixed
+
+- Use UTF-8 for Skills CLI check output so Windows runners with legacy console
+  encodings can print the CLI's Unicode characters.
+
 ## [0.1.5] - 2026-10-17
 
 - Move contributor instructions into `CONTRIBUTING.md` and use portable command examples.

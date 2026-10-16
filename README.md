@@ -20,7 +20,7 @@ python -m pip install .
 From GitHub:
 
 ```console
-python -m pip install "paperplot @ git+https://github.com/hwayy/paperplot.git@v0.1.5"
+python -m pip install "paperplot @ git+https://github.com/hwayy/paperplot.git@v0.1.6"
 ```
 
 ## Agent Skill
