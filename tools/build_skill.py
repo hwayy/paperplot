@@ -7,7 +7,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE = ROOT / "docs" / "api.md"
-TARGET = ROOT / ".agents" / "skills" / "paperplot-figure-formatting" / "references" / "api.md"
+TARGET = ROOT / ".agents" / "skills" / "paperplot" / "references" / "api.md"
 HEADER = "<!-- Generated from docs/api.md by tools/build_skill.py. Do not edit directly. -->\n\n"
 
 

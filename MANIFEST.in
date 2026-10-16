@@ -1,3 +1,3 @@
 include docs/api.md
 include tools/build_skill.py
-recursive-include .agents/skills/paperplot-figure-formatting *.md
+recursive-include .agents/skills/paperplot *.md

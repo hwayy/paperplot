@@ -19,7 +19,7 @@ def test_export_from_another_directory_and_read_only_check(tmp_path: Path):
     source = checkout / "docs" / "api.md"
     source.parent.mkdir()
     source.write_text("# API\n\nFirst version.\n", encoding="utf-8")
-    target = checkout / ".agents/skills/paperplot-figure-formatting/references/api.md"
+    target = checkout / ".agents/skills/paperplot/references/api.md"
 
     def run(*args):
         return subprocess.run(

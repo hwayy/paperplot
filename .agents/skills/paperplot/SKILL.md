@@ -1,9 +1,9 @@
 ---
-name: paperplot-figure-formatting
+name: paperplot
 description: Use this skill whenever creating, editing, reviewing, or regenerating Matplotlib figures for papers, slides, reports, experiments, or result artifacts. It ensures figures use the standalone paperplot package for LaTeX-ready text, readable sizing, stable layout, PDF-first export, and overlap checks.
 ---
 
-# Paperplot Figure Formatting
+# Paperplot
 
 Use `paperplot` from the active Python environment. Before writing or changing
 plotting code, read the bundled [API reference](references/api.md) for presets,

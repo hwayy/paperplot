@@ -22,9 +22,9 @@ python -m pip install "paperplot @ git+ssh://git@github.com/Chiahwa/paperplot.gi
 
 ## Agent Skill
 
-The [figure-formatting skill](.agents/skills/paperplot-figure-formatting/SKILL.md)
+The [paperplot skill](.agents/skills/paperplot/SKILL.md)
 provides plotting workflows and checks. Install the entire
-`.agents/skills/paperplot-figure-formatting` directory, including `references/`.
+`.agents/skills/paperplot` directory, including `references/`.
 The skill requires `paperplot` in the active Python environment.
 
 For local development, a directory junction keeps the installed skill in sync
@@ -34,8 +34,8 @@ with this checkout:
 $paperplotCheckout = (Get-Location).Path
 New-Item -ItemType Directory -Path (Join-Path $HOME ".agents/skills") -Force
 New-Item -ItemType Junction `
-  -Path (Join-Path $HOME ".agents/skills/paperplot-figure-formatting") `
-  -Target (Join-Path $paperplotCheckout ".agents/skills/paperplot-figure-formatting")
+  -Path (Join-Path $HOME ".agents/skills/paperplot") `
+  -Target (Join-Path $paperplotCheckout ".agents/skills/paperplot")
 ```
 
 ## Development
