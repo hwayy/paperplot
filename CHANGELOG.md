@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.1.5] - 2026-10-17
+
+- Move contributor instructions into `CONTRIBUTING.md` and use portable command examples.
+- Document Skills CLI installation and management, with Linux/Windows checks
+  that verify discovery, complete reference installation, listing, and removal.
+
 ## [0.1.2] - 2026-10-17
 
 ### Fixed

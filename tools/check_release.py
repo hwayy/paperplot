@@ -60,6 +60,7 @@ def check_distributions(directory: Path, name: str, version: str) -> None:
         "LICENSE",
         "README.md",
         "CHANGELOG.md",
+        "CONTRIBUTING.md",
         "pyproject.toml",
         "docs/api.md",
         "tools/build_skill.py",

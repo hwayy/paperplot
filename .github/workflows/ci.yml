@@ -88,6 +88,47 @@ jobs:
           path: dist/*
           if-no-files-found: error
 
+  skills:
+    name: Skills CLI / ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    defaults:
+      run:
+        shell: bash
+    env:
+      SKILLS_VERSION: "1.7.2"
+      DISABLE_TELEMETRY: "1"
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: "24"
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.13"
+      - name: Discover the skill from the checkout
+        env:
+          XDG_STATE_HOME: ${{ runner.temp }}/skills-state
+        run: npx --yes "skills@$SKILLS_VERSION" add . --list
+      - name: Install, list, and remove the complete skill in an isolated project
+        env:
+          PAPERPLOT_SOURCE: ${{ github.workspace }}
+          XDG_STATE_HOME: ${{ runner.temp }}/skills-state
+        run: |
+          mkdir -p "$RUNNER_TEMP/paperplot-skills-project"
+          cd "$RUNNER_TEMP/paperplot-skills-project"
+          npx --yes "skills@$SKILLS_VERSION" add "$PAPERPLOT_SOURCE" --skill paperplot --agent codex --copy --yes
+          npx --yes "skills@$SKILLS_VERSION" list --agent codex --json > installed-skills.json
+          python "$PAPERPLOT_SOURCE/tools/check_skill_install.py" .agents/skills/paperplot --listing installed-skills.json
+          npx --yes "skills@$SKILLS_VERSION" remove paperplot --yes
+          python -c "from pathlib import Path; assert not Path('.agents/skills/paperplot').exists()"
+
   latex:
     name: LaTeX rendering
     runs-on: ubuntu-latest
