@@ -7,6 +7,7 @@ import json
 import os
 import shutil
 import subprocess
+import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -22,6 +23,9 @@ def snapshot(directory: Path) -> dict[str, bytes]:
 
 
 def main() -> int:
+    # Skills CLI uses Unicode decorations that Windows' legacy code pages omit.
+    sys.stdout.reconfigure(encoding="utf-8")
+    sys.stderr.reconfigure(encoding="utf-8")
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--repository", required=True, help="GitHub owner/repository.")
     parser.add_argument("--revision", required=True, help="Remote commit matching the checkout.")
