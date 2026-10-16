@@ -17,7 +17,7 @@ python -m pip install .
 From GitHub:
 
 ```powershell
-python -m pip install "paperplot @ git+ssh://git@github.com/Chiahwa/paperplot.git@v0.1.1"
+python -m pip install "paperplot @ git+https://github.com/hwayy/paperplot.git@v0.1.2"
 ```
 
 ## Agent Skill
@@ -60,11 +60,39 @@ python tools/build_skill.py --check
 python -m ruff check .
 python -m pytest
 python -m build
+python -m twine check --strict dist/*
+python tools/check_release.py --dist dist
 ```
 
 `--check` fails if the generated reference is missing or out of date, without
 modifying files. Tests also check the committed reference and use `usetex=False`
 to avoid requiring LaTeX.
+
+## CI and Releases
+
+GitHub Actions runs documentation and release-metadata checks, Ruff, and tests
+on Linux and Windows with Python 3.10 through 3.15. It also builds and checks
+the wheel and source distribution, tests the installed wheel, and renders a
+LaTeX figure to PDF and PNG. The `latex-preview` workflow artifact is available
+for visual inspection.
+
+To publish a GitHub release:
+
+1. Update the version in `pyproject.toml`, the installation example above, and
+   the matching entry in [CHANGELOG.md](CHANGELOG.md).
+2. Run the local checks, commit the changes, and push `main`.
+3. Wait for CI to pass and inspect the LaTeX preview for readability and overlap.
+4. Create and push an annotated tag matching the package version:
+
+   ```powershell
+   git tag -a v0.1.2 -m "Release v0.1.2"
+   git push origin v0.1.2
+   ```
+
+The release workflow validates the tag and release notes, reruns the complete
+CI workflow for that commit, and attaches the checked wheel and source
+distribution to a GitHub Release. It uses the repository's `GITHUB_TOKEN` and
+publishes only after all checks succeed. PyPI publishing is not configured.
 
 ## Acknowledgements
 

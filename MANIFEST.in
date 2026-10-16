@@ -1,3 +1,4 @@
 include docs/api.md
-include tools/build_skill.py
+include CHANGELOG.md
+recursive-include tools *.py
 recursive-include .agents/skills/paperplot *.md

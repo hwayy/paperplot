@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "paperplot"
-version = "0.1.1"
+version = "0.1.2"
 description = "Reusable Matplotlib formatting helpers for LaTeX-ready papers and slides."
 readme = "README.md"
 requires-python = ">=3.10"
@@ -31,10 +31,12 @@ dev = [
     "pytest",
     "ruff",
     "build",
+    "twine",
+    "tomli; python_version < '3.11'",
 ]
 
 [project.urls]
-Repository = "https://github.com/Chiahwa/paperplot"
+Repository = "https://github.com/hwayy/paperplot"
 
 [tool.setuptools]
 package-dir = {"" = "src"}
