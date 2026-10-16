@@ -65,6 +65,8 @@ def check_distributions(directory: Path, name: str, version: str) -> None:
         "docs/api.md",
         "tools/build_skill.py",
         "tools/check_release.py",
+        "tools/check_github_install.py",
+        "tools/check_skill_remote.py",
         "tools/smoke_plot.py",
         ".agents/skills/paperplot/SKILL.md",
         ".agents/skills/paperplot/references/api.md",

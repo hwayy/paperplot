@@ -87,9 +87,35 @@ LaTeX figure to PDF and PNG. The `latex-preview` workflow artifact is available
 for visual inspection.
 
 The skill compatibility jobs use Node.js 24 and Skills CLI 1.7.2 on Linux and
-Windows. They discover the skill, install it into a temporary project, check
-that both the instructions and API reference were copied and listed, and
-uninstall it. They keep installer state outside the source checkout.
+Windows. They check local discovery and installation, then discover and install
+the skill from GitHub. Remote installations are pinned to the tested commit,
+including the head commit for pull requests, so later pushes cannot change the
+test input. Both skill files and the remote source recorded in the lock file
+are checked.
+
+To exercise an actual update, the remote skill check replaces the installed
+API reference with an older-content fixture and records its matching content
+hash in the project lock. The normal `npx skills update` command must download
+and restore the complete remote bundle and lock entry. A second update must
+report that the skill is current and leave its files and lock unchanged.
+Finally, the check removes the skill and verifies its directory, listing, and
+lock entry are gone. All installation and updater state stays in temporary
+directories outside the source checkout.
+
+Separate GitHub installation jobs use fresh Python environments on Linux and
+Windows. They install both the tested commit and the published `v0.1.5`
+baseline through pip's GitHub URL, check package version and VCS provenance,
+check dependencies, and exercise PDF/PNG export using the installed public API.
+The published baseline is independent of the version being prepared, so CI
+does not require a new release tag before the release can be created.
+
+To run these network checks locally, replace `COMMIT_SHA` with a pushed commit
+matching your checkout and use new directories for each run:
+
+```console
+python tools/check_github_install.py --repository hwayy/paperplot --revision COMMIT_SHA --work-dir build/github-install
+python tools/check_skill_remote.py --repository hwayy/paperplot --revision COMMIT_SHA --work-dir build/remote-skills
+```
 
 To publish a GitHub release:
 
