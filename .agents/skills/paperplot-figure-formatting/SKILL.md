@@ -27,9 +27,52 @@ Use this skill whenever a task creates or modifies Matplotlib plotting code or r
 
 ## Package Reference
 
-The standalone package repository is:
+The package repository is `https://github.com/Chiahwa/paperplot`. Use `paperplot`
+from the active Python environment; no particular local checkout is required.
 
-- GitHub: `git@github.com:Chiahwa/paperplot.git`
-- Local checkout: `C:\Users\Hwa\Repositories\Python\paperplot`
+## API Reference
 
-For API details, read the package `README.md` in the standalone checkout.
+The core API is documented here so this skill can be installed independently of
+the package repository.
+
+- `get_preset(name="manuscript_single", *, nrows=1, ncols=1, **overrides)`
+  returns an immutable `PlotSpec` with figure geometry and style settings.
+- `style_context(preset="manuscript_single", *, nrows=1, ncols=1, usetex=True, **overrides)`
+  applies settings inside a `with` block and yields the active `PlotSpec`.
+  LaTeX rendering requires a working `latex` executable on `PATH`.
+- `subplots(nrows=1, ncols=1, *, preset="manuscript_single", spec=None, usetex=True, **kwargs)`
+  returns `(fig, axes)` with figure size and subplot spacing applied. Pass the
+  context's `spec` to reuse its overrides, and use matching row/column counts.
+  Extra keyword arguments go to `matplotlib.pyplot.subplots`, such as `sharex=True`.
+- `apply_axes_style(ax, *, grid=True, legend_fontsize=None)` styles ticks, the
+  grid, and an existing legend. Call it after creating the legend.
+- `savefig(fig, path, *, formats=None, dpi=None)` creates parent directories,
+  exports PDF by default, and returns a list of written `Path` objects. Use
+  `formats="png"` or `formats=("pdf", "png")` for explicit output formats.
+
+Layout overrides use centimeters: `plot_width_cm`, `plot_height_cm`,
+`margin_left_cm`, `margin_right_cm`, `margin_bottom_cm`, `margin_top_cm`,
+`space_width_cm`, and `space_height_cm`. `subplot_ratio` is panel height divided
+by panel width. Figure height is computed from the layout unless
+`plot_height_cm` is supplied. `font_size` uses points; `dpi` controls raster
+resolution. `latex_preamble` customizes LaTeX packages and commands.
+
+Minimal example (requires LaTeX):
+
+```python
+import matplotlib
+
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
+from paperplot import apply_axes_style, savefig, style_context, subplots
+
+with style_context("manuscript_single") as spec:
+    fig, ax = subplots(spec=spec)
+    ax.plot([0, 1, 2], [0, 1, 4], label=r"$y=x^2$")
+    ax.set_xlabel(r"$x$")
+    ax.set_ylabel(r"$y$")
+    ax.legend()
+    apply_axes_style(ax)
+    savefig(fig, "results/figures/example")
+    plt.close(fig)
+```

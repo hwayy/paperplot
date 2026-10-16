@@ -7,14 +7,13 @@ usually chosen from document geometry rather than screen pixels.
 from __future__ import annotations
 
 import shutil
+from collections.abc import Iterator, Sequence
 from contextlib import contextmanager
 from dataclasses import dataclass, replace
 from pathlib import Path
-from typing import Iterator, Sequence
 
 import matplotlib.pyplot as plt
 from cycler import cycler
-
 
 CM_PER_INCH = 2.54
 DEFAULT_LATEX_PREAMBLE = r"\usepackage{amsmath}\usepackage{bm}"
