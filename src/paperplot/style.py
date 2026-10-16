@@ -18,6 +18,10 @@ from cycler import cycler
 CM_PER_INCH = 2.54
 DEFAULT_LATEX_PREAMBLE = r"\usepackage{amsmath}\usepackage{bm}"
 DEFAULT_FORMATS = ("pdf",)
+_FIXED_LAYOUT_PARAMS = {
+    "figure.autolayout": False,
+    "figure.constrained_layout.use": False,
+}
 
 
 @dataclass(frozen=True)
@@ -61,7 +65,18 @@ class PlotSpec:
 
     @property
     def subplot_height_cm(self) -> float:
-        return self.subplot_width_cm * self.subplot_ratio
+        if self.plot_height_cm is None:
+            height = self.subplot_width_cm * self.subplot_ratio
+        else:
+            height = (
+                self.plot_height_cm
+                - self.margin_bottom_cm
+                - self.margin_top_cm
+                - (self.nrows - 1) * self.space_height_cm
+            ) / self.nrows
+        if height <= 0:
+            raise ValueError("computed subplot height must be positive")
+        return height
 
     @property
     def height_cm(self) -> float:
@@ -81,13 +96,14 @@ class PlotSpec:
     @property
     def subplot_adjust(self) -> dict[str, float]:
         height = self.height_cm
+        panel_height = self.subplot_height_cm
         return {
             "left": self.margin_left_cm / self.plot_width_cm,
             "right": 1.0 - self.margin_right_cm / self.plot_width_cm,
             "bottom": self.margin_bottom_cm / height,
             "top": 1.0 - self.margin_top_cm / height,
             "wspace": self.space_width_cm / self.subplot_width_cm,
-            "hspace": self.space_height_cm / self.subplot_height_cm,
+            "hspace": self.space_height_cm / panel_height,
         }
 
 
@@ -209,6 +225,7 @@ def _rc_params(spec: PlotSpec) -> dict[str, object]:
         "#17becf",
     ]
     return {
+        **_FIXED_LAYOUT_PARAMS,
         "text.usetex": spec.usetex,
         "text.latex.preamble": spec.latex_preamble,
         "font.family": "serif",
@@ -264,15 +281,28 @@ def subplots(
 ):
     """Create Matplotlib subplots using a ``PlotSpec`` layout."""
 
+    for key, disabled_values in (
+        ("layout", (None, "none")),
+        ("tight_layout", (None, False)),
+        ("constrained_layout", (None, False)),
+    ):
+        value = kwargs.pop(key, None)
+        if value not in disabled_values:
+            raise ValueError(
+                f"{key}={value!r} conflicts with paperplot's fixed layout; "
+                "adjust margins and spacing through PlotSpec instead"
+            )
     active_spec = spec or get_preset(preset, nrows=nrows, ncols=ncols, usetex=usetex)
-    fig, axes = plt.subplots(
-        nrows,
-        ncols,
-        figsize=active_spec.figsize_inches,
-        dpi=active_spec.dpi,
-        **kwargs,
-    )
-    fig.subplots_adjust(**active_spec.subplot_adjust)
+    subplot_adjust = active_spec.subplot_adjust
+    with plt.rc_context(_FIXED_LAYOUT_PARAMS):
+        fig, axes = plt.subplots(
+            nrows,
+            ncols,
+            figsize=active_spec.figsize_inches,
+            dpi=active_spec.dpi,
+            **kwargs,
+        )
+    fig.subplots_adjust(**subplot_adjust)
     return fig, axes
 
 
@@ -297,13 +327,14 @@ def savefig(
     *,
     formats: Sequence[str] | str | None = None,
     dpi: int | None = None,
+    spec: PlotSpec | None = None,
 ) -> list[Path]:
-    """Save a figure, defaulting to PDF when no format is specified."""
+    """Save a figure using explicit formats, a spec's defaults, or PDF."""
 
     path = Path(path)
     selected_formats: tuple[str, ...]
     if formats is None:
-        selected_formats = DEFAULT_FORMATS
+        selected_formats = spec.default_formats if spec is not None else DEFAULT_FORMATS
     elif isinstance(formats, str):
         selected_formats = (formats,)
     else:
@@ -316,7 +347,7 @@ def savefig(
     output_paths: list[Path] = []
     for fmt in selected_formats:
         clean_fmt = fmt.lower().lstrip(".")
-        output_path = base.with_suffix(f".{clean_fmt}")
+        output_path = base.with_name(f"{base.name}.{clean_fmt}")
         fig.savefig(output_path, dpi=dpi)
         output_paths.append(output_path)
     return output_paths
